@@ -39,7 +39,7 @@ struct Move {
     Move(const Square& start, const Square& end, const Piece pieceMoved, const Piece pieceCaptured) : from(start), to(end), movedPiece(pieceMoved), capturedPiece(pieceCaptured) {}
 
     bool operator==(const Move& other) const{
-        return from == other.from && to == other.to;
+        return from == other.from && to == other.to && movedPiece == other.movedPiece && capturedPiece == other.capturedPiece;
     }
 };
 
@@ -69,10 +69,10 @@ class Board {
         std::vector<Move> getKingMoves(const Square& start) const;
 
         std::vector<Move> getMoves(const Square& start) const;
-
         std::vector<Move> getPlayerMoves(const Color color) const;
 
         Move getRandomMoveForPlayer(const Color color) const;
+        Move getLastMove() const;
 
 
 

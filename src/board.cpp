@@ -228,6 +228,34 @@ bool Board::makeMove(const Move& move){
     if (piece == PAWN && start.row == 1 && color == BLACK){
         piece = QUEEN;
     }
+    if (piece == PAWN && start.row == 4 && color == WHITE){
+        if (start.col >= 1 && end.col == start.col - 1){
+            if (getLastMove() == Move(Square(start.row + 2, start.col - 1), Square(start.row, start.col - 1), PAWN, EMPTY)){
+                board[start.row][end.col] = EMPTY;
+                colors[start.row][end.col] = NO_COLOR;
+            }
+        }
+        if (start.col <= 6 && end.col == start.col + 1){
+            if (getLastMove() == Move(Square(start.row + 2, start.col + 1), Square(start.row, start.col + 1), PAWN, EMPTY)){
+                board[start.row][end.col] = EMPTY;
+                colors[start.row][end.col] = NO_COLOR;
+            }
+        }
+    }
+    if (piece == PAWN && start.row == 3 && color == BLACK){
+        if (start.col >= 1 && end.col == start.col - 1){
+            if (getLastMove() == Move(Square(start.row - 2, start.col - 1), Square(start.row, start.col - 1), PAWN, EMPTY)){
+                board[start.row][end.col] = EMPTY;
+                colors[start.row][end.col] = NO_COLOR;
+            }
+        }
+        if (start.col <= 6 && end.col == start.col + 1){
+            if (getLastMove() == Move(Square(start.row - 2, start.col + 1), Square(start.row, start.col + 1), PAWN, EMPTY)){
+                board[start.row][end.col] = EMPTY;
+                colors[start.row][end.col] = NO_COLOR;
+            }
+        }
+    }
 
     int startRow = start.row;
     int startCol = start.col;
@@ -263,8 +291,14 @@ bool Board::makeMove(const Move& move){
 
 bool Board::moveInput(const std::string move){
     if (move == "stop"){
-        std::cout << "Stopping program" << std::endl;
+        std::cout << "Stopping program..." << std::endl;
         return false;
+    }
+
+    if (move == "last"){
+        Move lastMove = getLastMove();
+        std::cout << Printers::moveToString(lastMove) << std::endl;
+        return true;
     }
 
     if (move == "solo"){
@@ -455,15 +489,29 @@ std::vector<Move> Board::getPawnMoves(const Square& square) const{
             if (row == 6){
                 Square destination = Square(row + 1, square.col);
                 if (getPieceAt(destination) == EMPTY){
-                    moves.push_back(Move(square, destination, QUEEN, EMPTY));
+                    moves.push_back(Move(square, destination, PAWN, EMPTY));
                 }
                 Square takesLeft = Square(row + 1, square.col - 1);
                 if (getColorAt(takesLeft) == BLACK && square.col >= 1){
-                    moves.push_back(Move(square, takesLeft, QUEEN, getPieceAt(takesLeft)));
+                    moves.push_back(Move(square, takesLeft, PAWN, getPieceAt(takesLeft)));
                 }
                 Square takesRight = Square(row + 1, square.col + 1);
                 if (getColorAt(takesRight) == BLACK && square.col <= 6){
-                    moves.push_back(Move(square, takesRight, QUEEN, getPieceAt(takesRight)));
+                    moves.push_back(Move(square, takesRight, PAWN, getPieceAt(takesRight)));
+                }
+            }
+            if (row == 4){
+                if (square.col >= 1){
+                    Square takesLeft = Square(row + 1, square.col - 1);
+                    if (getPieceAt(takesLeft) == EMPTY && getLastMove() == Move(Square(row + 2, square.col - 1), Square(row, square.col - 1), PAWN, EMPTY)){ // checking if last move was a pawn moving two square forwards
+                        moves.push_back(Move(square, takesLeft, PAWN, EMPTY));
+                    }
+                }
+                if (square.col <= 6){
+                    Square takesRight = Square(row + 1, square.col + 1);
+                    if (getPieceAt(takesRight) == EMPTY && getLastMove() == Move(Square(row + 2, square.col + 1), Square(row, square.col + 1), PAWN, EMPTY)){ // checking if last move was a pawn moving two square forwards
+                        moves.push_back(Move(square, takesRight, PAWN, EMPTY));
+                    }
                 }
             }
             break;
@@ -503,15 +551,29 @@ std::vector<Move> Board::getPawnMoves(const Square& square) const{
             if (row == 1){
                 Square destination = Square(row - 1, square.col);
                 if (getPieceAt(destination) == EMPTY){
-                    moves.push_back(Move(square, destination, QUEEN, EMPTY));
+                    moves.push_back(Move(square, destination, PAWN, EMPTY));
                 }
                 Square takesLeft = Square(row - 1, square.col + 1);
                 if (getColorAt(takesLeft) == WHITE && square.col <= 6){
-                    moves.push_back(Move(square, takesLeft, QUEEN, getPieceAt(takesLeft)));
+                    moves.push_back(Move(square, takesLeft, PAWN, getPieceAt(takesLeft)));
                 }
                 Square takesRight = Square(row - 1, square.col - 1);
                 if (getColorAt(takesRight) == WHITE && square.col >= 1){
-                    moves.push_back(Move(square, takesRight, QUEEN, getPieceAt(takesRight)));
+                    moves.push_back(Move(square, takesRight, PAWN, getPieceAt(takesRight)));
+                }
+            }
+            if (row == 3){
+                if (square.col >= 1){
+                    Square takesLeft = Square(row - 1, square.col - 1);
+                    if (getPieceAt(takesLeft) == EMPTY && getLastMove() == Move(Square(row - 2, square.col - 1), Square(row, square.col - 1), PAWN, EMPTY)){ // checking if last move was a pawn moving two square forwards
+                        moves.push_back(Move(square, takesLeft, PAWN, EMPTY));
+                    }
+                }
+                if (square.col <= 6){
+                    Square takesRight = Square(row - 1, square.col + 1);
+                    if (getPieceAt(takesRight) == EMPTY && getLastMove() == Move(Square(row - 2, square.col + 1), Square(row, square.col + 1), PAWN, EMPTY)){ // checking if last move was a pawn moving two square forwards
+                        moves.push_back(Move(square, takesRight, PAWN, EMPTY));
+                    }
                 }
             }
             break;
@@ -535,11 +597,11 @@ std::vector<Move> Board::getBishopMoves(const Square& square) const{
         }
         Square destination = Square(row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -554,11 +616,11 @@ std::vector<Move> Board::getBishopMoves(const Square& square) const{
         }
         Square destination = Square(row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -573,11 +635,11 @@ std::vector<Move> Board::getBishopMoves(const Square& square) const{
         }
         Square destination = Square(row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -592,11 +654,11 @@ std::vector<Move> Board::getBishopMoves(const Square& square) const{
         }
         Square destination = Square(row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -621,7 +683,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -629,7 +691,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -638,7 +700,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -646,7 +708,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -655,7 +717,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -663,7 +725,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -672,7 +734,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -680,7 +742,7 @@ std::vector<Move> Board::getKnightMoves(const Square& square) const{
     if (newRow <= 7 && newRow >= 0 && newCol <= 7 && newCol >= 0){
         Square destination = Square(newRow, newCol);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -700,11 +762,11 @@ std::vector<Move> Board::getRookMoves(const Square& square) const{
         }
         Square destination = Square(row, square.col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -718,11 +780,11 @@ std::vector<Move> Board::getRookMoves(const Square& square) const{
         }
         Square destination = Square(row, square.col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -736,11 +798,11 @@ std::vector<Move> Board::getRookMoves(const Square& square) const{
         }
         Square destination = Square(square.row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -754,11 +816,11 @@ std::vector<Move> Board::getRookMoves(const Square& square) const{
         }
         Square destination = Square(square.row, col);
         if (getPieceAt(destination) == EMPTY){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             continue;
         }
         if (getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
             break;
         }
         break;
@@ -789,7 +851,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row <= 6 && col >= 1){
         Square destination = Square(row + 1, col - 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -797,7 +859,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row <= 6){
         Square destination = Square(row + 1, col);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -805,7 +867,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row <= 6 && col <= 6){
         Square destination = Square(row + 1, col + 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -813,7 +875,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (col >= 1){
         Square destination = Square(row, col - 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -821,7 +883,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (col <= 6){
         Square destination = Square(row, col + 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -829,7 +891,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row >= 1 && col >= 1){
         Square destination = Square(row - 1, col - 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -837,7 +899,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row >= 1){
         Square destination = Square(row - 1, col);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -845,7 +907,7 @@ std::vector<Move> Board::getKingMoves(const Square& square) const{
     if (row >= 1 && col <= 6){
         Square destination = Square(row - 1, col + 1);
         if (getPieceAt(destination) == EMPTY || getColorAt(destination) != color){
-            moves.push_back(Move(square, destination));
+            moves.push_back(Move(square, destination, getPieceAt(square), getPieceAt(destination)));
         }
     }
 
@@ -896,4 +958,8 @@ Move Board::getRandomMoveForPlayer(const Color color) const{
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0, moves.size() - 1);
     return moves[distr(gen)];
+}
+
+Move Board::getLastMove() const{
+    return moveList[moveList.size() - 1];
 }
