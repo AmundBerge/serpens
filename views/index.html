@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/main.js"></script>
+</head>
+<body>
+    <div id="board">
+        <div class="row">
+            <div class="white square" id="a8"></div>
+            <div class="black square" id="b8"></div>
+            <div class="white square" id="c8"></div>
+            <div class="black square" id="d8"></div>
+            <div class="white square" id="e8"></div>
+            <div class="black square" id="f8"></div>
+            <div class="white square" id="g8"></div>
+            <div class="black square" id="h8"></div>
+        </div>
+        <div class="row">
+            <div class="black square black-pawn" id="a7"></div>
+            <div class="white square black-pawn" id="b7"></div>
+            <div class="black square black-pawn" id="c7"></div>
+            <div class="white square black-pawn" id="d7"></div>
+            <div class="black square black-pawn" id="e7"></div>
+            <div class="white square black-pawn" id="f7"></div>
+            <div class="black square black-pawn" id="g7"></div>
+            <div class="white square black-pawn" id="h7"></div>
+        </div>
+        <div class="row">
+            <div class="white square" id="a6"></div>
+            <div class="black square" id="b6"></div>
+            <div class="white square" id="c6"></div>
+            <div class="black square" id="d6"></div>
+            <div class="white square" id="e6"></div>
+            <div class="black square" id="f6"></div>
+            <div class="white square" id="g6"></div>
+            <div class="black square" id="h6"></div>
+        </div>
+        <div class="row">
+            <div class="black square" id="a5"></div>
+            <div class="white square" id="b5"></div>
+            <div class="black square" id="c5"></div>
+            <div class="white square" id="d5"></div>
+            <div class="black square" id="e5"></div>
+            <div class="white square" id="f5"></div>
+            <div class="black square" id="g5"></div>
+            <div class="white square" id="h5"></div>
+        </div>
+        <div class="row">
+            <div class="white square" id="a4"></div>
+            <div class="black square" id="b4"></div>
+            <div class="white square" id="c4"></div>
+            <div class="black square" id="d4"></div>
+            <div class="white square" id="e4"></div>
+            <div class="black square" id="f4"></div>
+            <div class="white square" id="g4"></div>
+            <div class="black square" id="h4"></div>
+        </div>
+        <div class="row">
+            <div class="black square" id="a3"></div>
+            <div class="white square" id="b3"></div>
+            <div class="black square" id="c3"></div>
+            <div class="white square" id="d3"></div>
+            <div class="black square" id="e3"></div>
+            <div class="white square" id="f3"></div>
+            <div class="black square" id="g3"></div>
+            <div class="white square" id="h3"></div>
+        </div>
+        <div class="row">
+            <div class="white square white-pawn" id="a2"></div>
+            <div class="black square white-pawn" id="b2"></div>
+            <div class="white square white-pawn" id="c2"></div>
+            <div class="black square white-pawn" id="d2"></div>
+            <div class="white square white-pawn" id="e2"></div>
+            <div class="black square white-pawn" id="f2"></div>
+            <div class="white square white-pawn" id="g2"></div>
+            <div class="black square white-pawn" id="h2"></div>
+        </div>
+        <div class="row">
+            <div class="black square" id="a1"></div>
+            <div class="white square" id="b1"></div>
+            <div class="black square" id="c1"></div>
+            <div class="white square" id="d1"></div>
+            <div class="black square" id="e1"></div>
+            <div class="white square" id="f1"></div>
+            <div class="black square" id="g1"></div>
+            <div class="white square" id="h1"></div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="status"></div>
+        <button id="button" onclick="updateBoard()">Submit</button>
+    </div>
+    <div id="info">
+        <input type="text" id="info-field"></input>
+        <button id="info-button" onclick="updateInfo()">Submit</button>
+    </div>
+</body>
+</html>
