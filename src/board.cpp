@@ -222,6 +222,13 @@ bool Board::makeMove(const Move& move){
     Color color = getColorAt(start);
     Piece captured = getCapturedPiece(move);
 
+    if (piece == PAWN && start.row == 6 && color == WHITE){
+        piece = QUEEN;
+    }
+    if (piece == PAWN && start.row == 1 && color == BLACK){
+        piece = QUEEN;
+    }
+
     int startRow = start.row;
     int startCol = start.col;
     int endRow = end.row;
@@ -445,6 +452,20 @@ std::vector<Move> Board::getPawnMoves(const Square& square) const{
                     moves.push_back(Move(square, takesRight, PAWN, getPieceAt(takesRight)));
                 }
             }
+            if (row == 6){
+                Square destination = Square(row + 1, square.col);
+                if (getPieceAt(destination) == EMPTY){
+                    moves.push_back(Move(square, destination, QUEEN, EMPTY));
+                }
+                Square takesLeft = Square(row + 1, square.col - 1);
+                if (getColorAt(takesLeft) == BLACK && square.col >= 1){
+                    moves.push_back(Move(square, takesLeft, QUEEN, getPieceAt(takesLeft)));
+                }
+                Square takesRight = Square(row + 1, square.col + 1);
+                if (getColorAt(takesRight) == BLACK && square.col <= 6){
+                    moves.push_back(Move(square, takesRight, QUEEN, getPieceAt(takesRight)));
+                }
+            }
             break;
         case BLACK:
             if (row == 6){
@@ -477,6 +498,20 @@ std::vector<Move> Board::getPawnMoves(const Square& square) const{
                 Square takesRight = Square(row - 1, square.col - 1);
                 if (getColorAt(takesRight) == WHITE && square.col >= 1){
                     moves.push_back(Move(square, takesRight, PAWN, getPieceAt(takesRight)));
+                }
+            }
+            if (row == 1){
+                Square destination = Square(row - 1, square.col);
+                if (getPieceAt(destination) == EMPTY){
+                    moves.push_back(Move(square, destination, QUEEN, EMPTY));
+                }
+                Square takesLeft = Square(row - 1, square.col + 1);
+                if (getColorAt(takesLeft) == WHITE && square.col <= 6){
+                    moves.push_back(Move(square, takesLeft, QUEEN, getPieceAt(takesLeft)));
+                }
+                Square takesRight = Square(row - 1, square.col - 1);
+                if (getColorAt(takesRight) == WHITE && square.col >= 1){
+                    moves.push_back(Move(square, takesRight, QUEEN, getPieceAt(takesRight)));
                 }
             }
             break;

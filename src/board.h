@@ -56,8 +56,6 @@ class Board {
 
         bool moveInput(const std::string move);
 
-
-
         Piece getPieceAt(const Square& square) const;
         Color getColorAt(const Square& square) const;
         Piece getMovedPiece(const Move& move) const;
