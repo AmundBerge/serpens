@@ -138,9 +138,7 @@ bool Board::isValidMove(const Move& move) const{
     if (piece == EMPTY || color != nextToMove){
         return false;
     }
-
     
-
     if (piece == PAWN){
         std::vector<Move> pawnMoves = getPawnMoves(move.from);
         bool found = false;
@@ -207,6 +205,8 @@ bool Board::isValidMove(const Move& move) const{
         return found;
     }
 
+
+
     return true;
 }
 
@@ -268,23 +268,26 @@ bool Board::makeMove(const Move& move){
     board[endRow][endCol] = piece;
     colors[endRow][endCol] = color;
 
-    display();
+    moveList.push_back(move);
 
-    std::vector<Move> playerMoves = getPlayerMoves(nextToMove);
-    for (size_t i = 0; i < playerMoves.size(); i++){
-        if (playerMoves[i].capturedPiece == KING){
-            std::cout << "CHECK!" << std::endl;
-            break;
-        }
+    if (color == WHITE){
+        std::cout << "white" << std::endl;
     }
+
+    if (isInCheck(color)){
+        std::cout << "player is in check" << std::endl;
+        undoMove();
+    }
+
+    display();
 
     if (nextToMove == BLACK){
         nextToMove = WHITE;
     } else {
         nextToMove = BLACK;
     }
+    
 
-    moveList.push_back(move);
     
     return true;
 }
@@ -293,6 +296,26 @@ bool Board::moveInput(const std::string move){
     if (move == "stop"){
         std::cout << "Stopping program..." << std::endl;
         return false;
+    }
+
+    if (move == "player"){
+        switch (nextToMove){
+            case WHITE:
+                std::cout << "White's turn" << std::endl;
+                break;
+            case BLACK:
+                std::cout << "Black's turn" << std::endl;
+                break;
+            default:
+                std::cout << "wtf" << std::endl;
+                break;
+        }
+        return true;
+    }
+
+    if (move == "display"){
+        display();
+        return true;
     }
 
     if (move == "last"){
@@ -310,6 +333,7 @@ bool Board::moveInput(const std::string move){
     if (move == "undo"){
         std::cout << "Undoing move" << std::endl;
         undoMove();
+        display();
         return true;
     }
 
@@ -422,8 +446,6 @@ bool Board::undoMove(){
     } else {
         nextToMove = BLACK;
     }
-
-    display();
 
     return true;
 }
@@ -963,3 +985,48 @@ Move Board::getRandomMoveForPlayer(const Color color) const{
 Move Board::getLastMove() const{
     return moveList[moveList.size() - 1];
 }
+
+bool Board::isInCheck(const Color color) const{
+    std::vector<Move> moves;
+
+    if (color == BLACK){
+        moves = getPlayerMoves(WHITE);
+        for (size_t i = 0; i < moves.size(); i++){
+            if (moves[i].capturedPiece == KING){
+                return true;
+            }
+        }    
+    }
+
+    if (color == WHITE){
+        moves = getPlayerMoves(BLACK);
+        for (size_t i = 0; i < moves.size(); i++){
+            if (moves[i].capturedPiece == KING){
+                return true;
+            }
+        }    
+    }
+
+    /* switch (color){
+        case BLACK:
+            moves = getPlayerMoves(WHITE);
+            for (size_t i; i < moves.size(); i++){
+                if (moves[i].capturedPiece == KING){
+                    return true;
+                }
+            }
+            return false;
+        case WHITE:
+            moves = getPlayerMoves(BLACK);
+            for (size_t i; i < moves.size(); i++){
+                if (moves[i].capturedPiece == KING){
+                    return true;
+                }
+            }
+            return false;
+        default:
+            std::cout << "WUT" << std::endl;
+            return false;
+    } */
+   return false;
+} 

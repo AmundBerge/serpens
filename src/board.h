@@ -73,6 +73,7 @@ class Board {
 
         Move getRandomMoveForPlayer(const Color color) const;
         Move getLastMove() const;
+        bool isInCheck(const Color color) const;
 
 
 
