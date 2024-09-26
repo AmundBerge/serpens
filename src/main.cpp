@@ -8,7 +8,6 @@
 int main(){
     Board board;
     board.display();
-
     std::string input;
 
     while (true){
@@ -18,6 +17,7 @@ int main(){
         if (!moveSuccess){
             break;
         }
+        
     }
 
     return 0;

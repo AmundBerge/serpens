@@ -128,6 +128,7 @@ void Board::display() const{
     }
     std::cout << rank << std::endl;
     }
+    std::cout << "---------------" << std::endl;
 }
 
 bool Board::isValidMove(const Move& move) const{
@@ -270,16 +271,10 @@ bool Board::makeMove(const Move& move){
 
     moveList.push_back(move);
 
-    if (color == WHITE){
-        std::cout << "white" << std::endl;
-    }
-
     if (isInCheck(color)){
         std::cout << "player is in check" << std::endl;
         undoMove();
     }
-
-    display();
 
     if (nextToMove == BLACK){
         nextToMove = WHITE;
@@ -287,15 +282,24 @@ bool Board::makeMove(const Move& move){
         nextToMove = BLACK;
     }
     
-
-    
     return true;
 }
 
 bool Board::moveInput(const std::string move){
+
     if (move == "stop"){
         std::cout << "Stopping program..." << std::endl;
         return false;
+    }
+
+    if (move == "legal"){
+        bool test = hasLegalMoves(nextToMove);
+        if (hasLegalMoves(nextToMove)){
+            std::cout << "Legal move" << std::endl;
+        } else {
+            std::cout << "No legal moves" << std::endl;
+        }
+        return true;
     }
 
     if (move == "player"){
@@ -394,6 +398,8 @@ bool Board::moveInput(const std::string move){
         std::cout << "Engine move: " << Printers::moveToString(engineMove) << std::endl;
         makeMove(engineMove);
     }
+
+    display();
 
     return true;
 
@@ -1007,26 +1013,21 @@ bool Board::isInCheck(const Color color) const{
         }    
     }
 
-    /* switch (color){
-        case BLACK:
-            moves = getPlayerMoves(WHITE);
-            for (size_t i; i < moves.size(); i++){
-                if (moves[i].capturedPiece == KING){
-                    return true;
-                }
-            }
-            return false;
-        case WHITE:
-            moves = getPlayerMoves(BLACK);
-            for (size_t i; i < moves.size(); i++){
-                if (moves[i].capturedPiece == KING){
-                    return true;
-                }
-            }
-            return false;
-        default:
-            std::cout << "WUT" << std::endl;
-            return false;
-    } */
-   return false;
+    return false;
 } 
+
+bool Board::hasLegalMoves(const Color color){
+    std::vector<Move> moves = getPlayerMoves(color);
+    bool hasFoundLegalMove = false;
+    for (size_t i = 0; i < moves.size(); i++){
+        makeMove(moves[i]);
+        bool playerIsInCheck = isInCheck(color);
+        if (!playerIsInCheck){
+            std::cout << Printers::moveToString(moves[i]) << std::endl;
+            hasFoundLegalMove = true;
+            break;
+        }
+    }
+    return hasFoundLegalMove;
+}
+
