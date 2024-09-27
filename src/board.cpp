@@ -292,8 +292,16 @@ bool Board::moveInput(const std::string move){
         return false;
     }
 
+    if (move == "state"){
+        if (!hasLegalMoves(nextToMove) && isInCheck(nextToMove)){
+            std::cout << "Checkmate" << std::endl;
+        } else {
+            std::cout << "no" << std::endl;
+        }
+        return true;
+    }
+
     if (move == "legal"){
-        bool test = hasLegalMoves(nextToMove);
         if (hasLegalMoves(nextToMove)){
             std::cout << "Legal move" << std::endl;
         } else {
@@ -1023,7 +1031,7 @@ bool Board::hasLegalMoves(const Color color){
         makeMove(moves[i]);
         bool playerIsInCheck = isInCheck(color);
         if (!playerIsInCheck){
-            std::cout << Printers::moveToString(moves[i]) << std::endl;
+            undoMove();
             hasFoundLegalMove = true;
             break;
         }
