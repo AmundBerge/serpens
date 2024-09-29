@@ -247,9 +247,29 @@ bool Board::makeMove(const Move& move){
                 break;
         }
     }
+
     if (piece == PAWN && start.row == 1 && color == BLACK){
-        piece = QUEEN;
+        char pieceToPromoteTo;
+        std::cin >> pieceToPromoteTo;
+        switch (pieceToPromoteTo){
+            case 'q':
+                piece = QUEEN;
+                break;
+            case 'r':
+                piece = ROOK;
+                break;
+            case 'n':
+                piece = KNIGHT;
+                break;
+            case 'b':
+                piece = BISHOP;
+                break;
+            default:
+                std::cerr << "WTF" << std::endl;
+                break;
+        }
     }
+    
     if (piece == PAWN && start.row == 4 && color == WHITE){
         if (start.col >= 1 && end.col == start.col - 1){
             if (getLastMove() == Move(Square(start.row + 2, start.col - 1), Square(start.row, start.col - 1), PAWN, EMPTY)){
