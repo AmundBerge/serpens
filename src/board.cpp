@@ -63,6 +63,10 @@ void Board::initialize(){
 
     nextToMove = WHITE;
     playAgainstEngine = false;
+    whiteCanCastleShort = true;
+    whiteCanCastleLong = true;
+    blackCanCastleShort = true;
+    blackCanCastleLong = true;
 }
 
 void Board::display() const{
@@ -209,8 +213,6 @@ bool Board::isValidMove(const Move& move) const{
         return found;
     }
 
-
-
     return true;
 }
 
@@ -269,7 +271,7 @@ bool Board::makeMove(const Move& move){
                 break;
         }
     }
-    
+
     if (piece == PAWN && start.row == 4 && color == WHITE){
         if (start.col >= 1 && end.col == start.col - 1){
             if (getLastMove() == Move(Square(start.row + 2, start.col - 1), Square(start.row, start.col - 1), PAWN, EMPTY)){
@@ -284,6 +286,7 @@ bool Board::makeMove(const Move& move){
             }
         }
     }
+
     if (piece == PAWN && start.row == 3 && color == BLACK){
         if (start.col >= 1 && end.col == start.col - 1){
             if (getLastMove() == Move(Square(start.row - 2, start.col - 1), Square(start.row, start.col - 1), PAWN, EMPTY)){
@@ -390,6 +393,16 @@ bool Board::moveInput(const std::string move){
         return true;
     }
 
+    if (move == "short" || move == "long"){
+        bool castleSuccess = castle(move);
+        if (!castleSuccess){
+            std::cout << "Move failed" << std::endl;
+        } else {
+            display();
+        }
+        return true;
+    }
+
     if (move.length() == 2){
         int startCol = move[0] - 'a';
         int startRow = move[1] - '1';
@@ -458,6 +471,94 @@ bool Board::moveInput(const std::string move){
 
     return true;
 
+}
+
+bool Board::castle(const std::string move){
+    Color color = nextToMove;
+    if (isInCheck(color)){
+        return false;
+    }
+    std::vector<Square> squaresToCheck; 
+    std::vector<Move> opposingPlayerMoves; 
+    if (color == WHITE){
+        if (!whiteCanCastleShort || !whiteCanCastleLong){
+            return false;
+        }
+        if (move == "short"){
+            Square sq1 = Square(0, 4);
+            Square sq2 = Square(0, 5);
+            Square sq3 = Square(0, 6);
+            Square sq4 = Square(0, 7);
+            squaresToCheck.push_back(sq1);
+            squaresToCheck.push_back(sq2);
+            squaresToCheck.push_back(sq3);
+            squaresToCheck.push_back(sq4);
+        } else if (move == "long"){
+            Square sq1 = Square(0, 4);
+            Square sq2 = Square(0, 3);
+            Square sq3 = Square(0, 2);
+            Square sq4 = Square(0, 0);
+            squaresToCheck.push_back(sq1);
+            squaresToCheck.push_back(sq2);
+            squaresToCheck.push_back(sq3);
+            squaresToCheck.push_back(sq4);
+        } else {
+            std::cerr << "Castling error" << std::endl;
+        }
+    }
+    if (color == BLACK){
+        if (!blackCanCastleShort || !blackCanCastleLong){
+            return false;
+        }
+        if (move == "short"){
+            Square sq1 = Square(7, 4);
+            Square sq2 = Square(7, 5);
+            Square sq3 = Square(7, 6);
+            Square sq4 = Square(7, 7);
+            squaresToCheck.push_back(sq1);
+            squaresToCheck.push_back(sq2);
+            squaresToCheck.push_back(sq3);
+            squaresToCheck.push_back(sq4);
+        } else if (move == "long"){
+            Square sq1 = Square(7, 4);
+            Square sq2 = Square(7, 3);
+            Square sq3 = Square(7, 2);
+            Square sq4 = Square(7, 0);
+            squaresToCheck.push_back(sq1);
+            squaresToCheck.push_back(sq2);
+            squaresToCheck.push_back(sq3);
+            squaresToCheck.push_back(sq4);
+        } else {
+            std::cerr << "Castling error" << std::endl;
+        }
+    }
+    if (!(getPieceAt(squaresToCheck[0]) == KING && getPieceAt(squaresToCheck[1]) == EMPTY && getPieceAt(squaresToCheck[2]) == EMPTY)){
+        return false;
+    }
+    for (size_t i = 0; i < opposingPlayerMoves.size(); i++){
+        Square target = opposingPlayerMoves[i].to;
+        if (target == squaresToCheck[0] || target == squaresToCheck[1] || target == squaresToCheck[2]){
+            return false;
+        }
+    }
+    board[squaresToCheck[0].row][squaresToCheck[0].col] = EMPTY;
+    board[squaresToCheck[2].row][squaresToCheck[2].col] = KING;
+    board[squaresToCheck[1].row][squaresToCheck[1].col] = ROOK;
+    board[squaresToCheck[3].row][squaresToCheck[3].col] = EMPTY;
+
+
+    colors[squaresToCheck[0].row][squaresToCheck[0].col] = NO_COLOR;
+    colors[squaresToCheck[2].row][squaresToCheck[2].col] = color;
+    colors[squaresToCheck[1].row][squaresToCheck[1].col] = color;
+    colors[squaresToCheck[3].row][squaresToCheck[3].col] = NO_COLOR;
+
+    if (nextToMove == WHITE){
+        nextToMove = BLACK;
+    } else {
+        nextToMove = WHITE;
+    }
+
+    return true;
 }
 
 bool Board::undoMove(){
