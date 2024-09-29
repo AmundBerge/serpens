@@ -77,6 +77,8 @@ class Board {
         bool isInCheck(const Color color) const;
         bool hasLegalMoves(const Color color);
 
+        void flipPlayerTurn();
+
 
 
     private:
@@ -89,6 +91,10 @@ class Board {
         bool whiteCanCastleLong;
         bool blackCanCastleShort;
         bool blackCanCastleLong;
+        Move WHITE_SHORT_CASTLE;
+        Move WHITE_LONG_CASTLE;
+        Move BLACK_SHORT_CASTLE;
+        Move BLACK_LONG_CASTLE;
 };
 
 

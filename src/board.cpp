@@ -67,6 +67,11 @@ void Board::initialize(){
     whiteCanCastleLong = true;
     blackCanCastleShort = true;
     blackCanCastleLong = true;
+
+    Move WHITE_SHORT_CASTLE = Move(Square(0, 1), Square(0, 1), EMPTY, EMPTY);
+    Move WHITE_LONG_CASTLE = Move(Square(0, 2), Square(0, 2), EMPTY, EMPTY);
+    Move BLACK_SHORT_CASTLE = Move(Square(0, 3), Square(0, 3), EMPTY, EMPTY);
+    Move BLACK_LONG_CASTLE = Move(Square(0, 4), Square(0, 4), EMPTY, EMPTY);
 }
 
 void Board::display() const{
@@ -552,6 +557,18 @@ bool Board::castle(const std::string move){
     colors[squaresToCheck[1].row][squaresToCheck[1].col] = color;
     colors[squaresToCheck[3].row][squaresToCheck[3].col] = NO_COLOR;
 
+    if (color == WHITE && move == "short"){
+        moveList.push_back(WHITE_SHORT_CASTLE);
+    } else if (color == WHITE && move == "long"){
+        moveList.push_back(WHITE_LONG_CASTLE);
+    } else if (color == BLACK && move == "short"){
+        moveList.push_back(BLACK_SHORT_CASTLE);
+    } else if (color == BLACK && move == "long"){
+        moveList.push_back(BLACK_LONG_CASTLE);
+    } else {
+        std::cerr << "nah m8" << std::endl;
+    }
+
     if (nextToMove == WHITE){
         nextToMove = BLACK;
     } else {
@@ -568,6 +585,62 @@ bool Board::undoMove(){
     }
 
     Move lastMove = moveList.back();
+
+    if (lastMove == WHITE_SHORT_CASTLE){
+        board[0][4] = KING;
+        board[0][5] = EMPTY;
+        board[0][6] = EMPTY;
+        board[0][7] = ROOK;
+        colors[0][4] = WHITE;
+        colors[0][5] = NO_COLOR;
+        colors[0][6] = NO_COLOR;
+        colors[0][7] = WHITE;
+        flipPlayerTurn();
+        moveList.erase(moveList.begin() + moveList.size() - 1);
+        return true;
+    }
+
+    if (lastMove == WHITE_LONG_CASTLE){
+        board[0][4] = KING;
+        board[0][3] = EMPTY;
+        board[0][2] = EMPTY;
+        board[0][0] = ROOK;
+        colors[0][4] = WHITE;
+        colors[0][3] = NO_COLOR;
+        colors[0][2] = NO_COLOR;
+        colors[0][0] = WHITE;
+        flipPlayerTurn();
+        moveList.erase(moveList.begin() + moveList.size() - 1);
+        return true;
+    }
+
+    if (lastMove == BLACK_SHORT_CASTLE){
+        board[7][4] = KING;
+        board[7][5] = EMPTY;
+        board[7][6] = EMPTY;
+        board[7][7] = ROOK;
+        colors[7][4] = BLACK;
+        colors[7][5] = NO_COLOR;
+        colors[7][6] = NO_COLOR;
+        colors[7][7] = BLACK;
+        flipPlayerTurn();
+        moveList.erase(moveList.begin() + moveList.size() - 1);
+        return true;
+    }
+
+    if (lastMove == BLACK_LONG_CASTLE){
+        board[7][4] = KING;
+        board[7][3] = EMPTY;
+        board[7][2] = EMPTY;
+        board[7][0] = ROOK;
+        colors[7][4] = BLACK;
+        colors[7][3] = NO_COLOR;
+        colors[7][2] = NO_COLOR;
+        colors[7][0] = BLACK;
+        flipPlayerTurn();
+        moveList.erase(moveList.begin() + moveList.size() - 1);
+        return true;
+    }
 
     Square start = lastMove.from;
     Square end = lastMove.to;
@@ -1187,3 +1260,12 @@ bool Board::hasLegalMoves(const Color color){
     return hasFoundLegalMove;
 }
 
+void Board::flipPlayerTurn(){
+    if (nextToMove == WHITE){
+        nextToMove = BLACK;
+    } else {
+        nextToMove = WHITE;
+    }
+
+    return;
+}
