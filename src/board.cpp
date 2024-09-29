@@ -272,7 +272,6 @@ bool Board::makeMove(const Move& move){
     moveList.push_back(move);
 
     if (isInCheck(color)){
-        std::cout << "player is in check" << std::endl;
         undoMove();
     }
 
@@ -300,6 +299,7 @@ bool Board::moveInput(const std::string move){
         }
         return true;
     }
+
 
     if (move == "legal"){
         if (hasLegalMoves(nextToMove)){
@@ -405,6 +405,11 @@ bool Board::moveInput(const std::string move){
         Move engineMove = getRandomMoveForPlayer(BLACK);
         std::cout << "Engine move: " << Printers::moveToString(engineMove) << std::endl;
         makeMove(engineMove);
+    }
+
+    if (!hasLegalMoves(nextToMove) && isInCheck(nextToMove)){
+        std::cout << "CHECKMATE" << std::endl;
+        return false;
     }
 
     display();
