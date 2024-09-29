@@ -53,6 +53,7 @@ class Board {
         bool makeMove(const Move& move);
         bool isValidMove(const Move& move) const;
         bool undoMove();
+        bool castle(const std::string move);
 
         bool moveInput(const std::string move);
 
@@ -84,11 +85,11 @@ class Board {
         Color nextToMove;
         std::vector<Move> moveList;
         bool playAgainstEngine;
+        bool whiteCanCastleShort;
+        bool whiteCanCastleLong;
+        bool blackCanCastleShort;
+        bool blackCanCastleLong;
 };
-
-namespace Helpers {
-    void piecePrinter(Piece piece);
-}
 
 
 
