@@ -227,7 +227,25 @@ bool Board::makeMove(const Move& move){
     Piece captured = getCapturedPiece(move);
 
     if (piece == PAWN && start.row == 6 && color == WHITE){
-        piece = QUEEN;
+        char pieceToPromoteTo;
+        std::cin >> pieceToPromoteTo;
+        switch (pieceToPromoteTo){
+            case 'q':
+                piece = QUEEN;
+                break;
+            case 'r':
+                piece = ROOK;
+                break;
+            case 'n':
+                piece = KNIGHT;
+                break;
+            case 'b':
+                piece = BISHOP;
+                break;
+            default:
+                std::cerr << "WTF" << std::endl;
+                break;
+        }
     }
     if (piece == PAWN && start.row == 1 && color == BLACK){
         piece = QUEEN;
