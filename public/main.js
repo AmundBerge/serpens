@@ -41,7 +41,6 @@ async function updateBoard(){
     let start = document.querySelector(`#${startSquare}`);
     let end = document.querySelector(`#${endSquare}`);
     await sendMove(start.id + end.id);
-    console.log(moveSuccess);
     if (moveSuccess){
         updatePieces(start.id + end.id);
         if (playingAgainstEngine){
@@ -88,10 +87,11 @@ async function sendMove(move){
         })
         if (response.ok){
             const result = await response.text();
-            console.log(result);
+            if (result == 'Game is finished'){
+                alert('we done');
+            }
             if (result.length > 14){
                 engineMove = result.substring(result.length - 4, result.length);
-                console.log(engineMove, 'yes');
             }
             moveSuccess = (result.includes('Move success'));
         }
@@ -111,7 +111,6 @@ async function sendInfo(info){
         })
         if (response.ok){
             const result = await response.text();
-            console.log(result, 'hello');
             playingAgainstEngine = true;
         }
     } catch (error){

@@ -66,6 +66,7 @@ void Board::initialize(){
 }
 
 void Board::display() const{
+    std::string outputString = "";
     for (int row = 7; row >= 0; row--){
         std::string rank = "";
         for (int col = 0; col < 8; col++){
@@ -123,12 +124,14 @@ void Board::display() const{
                 default:
                     rank += "□";
                     break;
+            }
+            rank += " ";
         }
-        rank += " ";
+        outputString += rank;
+        outputString += '\n';
     }
-    std::cout << rank << std::endl;
-    }
-    std::cout << "---------------" << std::endl;
+    outputString += "---------------";
+    std::cout << outputString << std::endl;
 }
 
 bool Board::isValidMove(const Move& move) const{
@@ -399,6 +402,7 @@ bool Board::moveInput(const std::string move){
 
     if (!moveSuccess){
         std::cout << "Move failed" << std::endl;
+        return true;
     }
 
     if (moveSuccess && playAgainstEngine){

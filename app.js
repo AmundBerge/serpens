@@ -8,13 +8,14 @@ const { spawn } = require('child_process');
 const engine = spawn('./chess');
 
 let moveSuccess = true;
-let infoSuccess = true;
+let infoSuccess = true; 
 let playingAgainstEngine = false;
 let engineMove = '';
+let gameFinished = false;
 
 engine.stdout.on('data', (data) => {
     let engineData = `${data}`;
-    console.log('here comes the data', '\n' + engineData);
+    console.log(engineData);
     moveSuccess = !engineData.includes('failed');
     infoSuccess = engineData.includes('Playing against engine');
     if (infoSuccess){
@@ -29,16 +30,32 @@ engine.stdout.on('data', (data) => {
     }
 })
 
+engine.on('exit', (program) => {
+    if (program === 0){
+        console.log('SUUIIIII');
+    } else {
+        console.log('NOOOO');
+    }
+    gameFinished = true;
+})
+
 app.use(express.text());
 
 app.post('/move', (req, res) => {
     const move = req.body.trim();
+    console.log(move);
     engine.stdin.write(move + '\n');
     setTimeout(() => {
-        if (moveSuccess){
-            res.status(200).send('Move success' + engineMove);
+        if (gameFinished){
+            res.status(200).send('Game is finished');
         } else {
-            res.status(200).send('Move fail');
+            if (moveSuccess){
+                console.log("Succccccess");
+                res.status(200).send('Move success' + engineMove);
+            } else {
+                console.log("NNPOOOOOO");
+                res.status(200).send('Move fail');
+            }
         }
     }, 100);
 })
