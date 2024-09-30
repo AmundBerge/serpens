@@ -1414,7 +1414,7 @@ std::string Board::toString() const{
             }
         }
     }
-    str += "_X_";
+    str += "-X-";
     str += nextToMove == WHITE ? "W" : "B";
     str += whiteCanCastleShort ? "1" : "0";
     str += whiteCanCastleLong ? "1" : "0";

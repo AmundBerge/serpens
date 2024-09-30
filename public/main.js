@@ -7,6 +7,70 @@ let moveSuccess = false;
 let playingAgainstEngine = false;
 let engineMove = '';
 
+const startingBoard = "_X_RNBQKBNRPPPPPPPP□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□pppppppprnbqkbnr_X_W1111";
+
+function placePieces(str){
+    if (str.length != 75){
+        console.log('wrong string format');
+        return;
+    }
+    let squares = str.substring(3, 67);
+    for (let i = 0; i < 64; i++){
+
+        let myLetter = letters[i % 8];
+        let myNumber = Math.floor(i / 8) + 1;
+        /* let myLetter = letters[Math.floor(i / 8)];
+        let myNumber = i % 8 + 1; */
+        console.log(myLetter, myNumber);
+        let character = squares[i];
+        let square = document.querySelector('#' + myLetter + myNumber);
+        switch (character){
+            case '□':
+                square.style.backgroundImage = 'none';
+                break;
+            case 'P':
+                square.style.backgroundImage = "url('./resources/wP.svg')";
+                break;
+            case 'p':
+                square.style.backgroundImage = "url('./resources/bP.svg')";
+                break;
+            case 'N':
+                square.style.backgroundImage = "url('./resources/wN.svg')";
+                break;
+            case 'n':
+                square.style.backgroundImage = "url('./resources/bN.svg')";
+                break;
+            case 'B':
+                square.style.backgroundImage = "url('./resources/wB.svg')";
+                break;
+            case 'b':
+                square.style.backgroundImage = "url('./resources/bB.svg')";
+                break;
+            case 'R':
+                square.style.backgroundImage = "url('./resources/wR.svg')";
+                break;
+            case 'r':
+                square.style.backgroundImage = "url('./resources/bR.svg')";
+                break;
+            case 'Q':
+                square.style.backgroundImage = "url('./resources/wQ.svg')";
+                break;
+            case 'q':
+                square.style.backgroundImage = "url('./resources/bQ.svg')";
+                break;
+            case 'K':
+                square.style.backgroundImage = "url('./resources/wK.svg')";
+                break;
+            case 'k':
+                square.style.backgroundImage = "url('./resources/bK.svg')";
+                break;
+            default:
+                console.log("ERROR: ", character);
+                break;
+        }
+    }
+}
+
 let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 for (let i = 0; i < letters.length; i++){
     let letter = letters[i];
