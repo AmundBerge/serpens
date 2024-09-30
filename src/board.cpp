@@ -68,13 +68,20 @@ void Board::initialize(){
     blackCanCastleShort = true;
     blackCanCastleLong = true;
 
-    Move WHITE_SHORT_CASTLE = Move(Square(0, 1), Square(0, 1), EMPTY, EMPTY);
-    Move WHITE_LONG_CASTLE = Move(Square(0, 2), Square(0, 2), EMPTY, EMPTY);
-    Move BLACK_SHORT_CASTLE = Move(Square(0, 3), Square(0, 3), EMPTY, EMPTY);
-    Move BLACK_LONG_CASTLE = Move(Square(0, 4), Square(0, 4), EMPTY, EMPTY);
+    WHITE_SHORT_CASTLE = Move(Square(0, 1), Square(0, 1), EMPTY, EMPTY);
+    WHITE_LONG_CASTLE = Move(Square(0, 2), Square(0, 2), EMPTY, EMPTY);
+    BLACK_SHORT_CASTLE = Move(Square(0, 3), Square(0, 3), EMPTY, EMPTY);
+    BLACK_LONG_CASTLE = Move(Square(0, 4), Square(0, 4), EMPTY, EMPTY);
+    playingInTerminal = false;
+    halfMoveCounter = 0;
 }
 
 void Board::display() const{
+    if (!playingInTerminal){
+        std::string s = toString();
+        std::cout << s << std::endl;
+        return;
+    }
     std::string outputString = "";
     for (int row = 7; row >= 0; row--){
         std::string rank = "";
@@ -233,6 +240,22 @@ bool Board::makeMove(const Move& move){
     Color color = getColorAt(start);
     Piece captured = getCapturedPiece(move);
 
+    if (start == Square(0, 0) && piece == ROOK || end == Square(0, 0) && captured == ROOK){
+        whiteCanCastleLong = false;
+    }
+
+    if (start == Square(0, 7) || end == Square(0, 7)){
+        whiteCanCastleShort = false;
+    }
+
+    if (start == Square(7, 0) || end == Square(7, 0)){
+        blackCanCastleLong = false;
+    }
+
+    if (start == Square(7, 7) || end == Square(7, 7)){
+        blackCanCastleShort = false;
+    }
+
     if (piece == PAWN && start.row == 6 && color == WHITE){
         char pieceToPromoteTo;
         std::cin >> pieceToPromoteTo;
@@ -307,6 +330,12 @@ bool Board::makeMove(const Move& move){
         }
     }
 
+    if (piece == PAWN || captured != EMPTY){
+        halfMoveCounter = 0;
+    } else {
+        halfMoveCounter += 1; 
+    }
+
     int startRow = start.row;
     int startCol = start.col;
     int endRow = end.row;
@@ -340,6 +369,10 @@ bool Board::moveInput(const std::string move){
         return false;
     }
 
+    if (move == "terminal"){
+        playingInTerminal = true;
+    }
+
     if (move == "state"){
         if (!hasLegalMoves(nextToMove) && isInCheck(nextToMove)){
             std::cout << "Checkmate" << std::endl;
@@ -349,6 +382,26 @@ bool Board::moveInput(const std::string move){
         return true;
     }
 
+    if (move == "fifty"){
+        if (halfMoveCounter >= 100){
+            char wantsToDraw;
+            std::cout << "Do you want to draw? (Y/N)" << std::endl;
+            std::cin >> wantsToDraw;
+            if (wantsToDraw == 'Y'){
+                std::cout << "Draw! Stopping program..." << std::endl;
+                return false;
+            } 
+            if (wantsToDraw == 'N'){
+                std::cout << "Continuing!" << std::endl;
+                return true;
+            }
+            std::cerr << "what!?" << std::endl;
+            return true;
+        } else {
+            std::cout << "Draw not available" << std::endl;
+            return true;
+        }
+    }
 
     if (move == "legal"){
         if (hasLegalMoves(nextToMove)){
@@ -408,6 +461,24 @@ bool Board::moveInput(const std::string move){
         return true;
     }
 
+    if (move == "castle"){
+        std::string s = "Castling rights: ";
+        if (whiteCanCastleShort){
+            s += " | white short";
+        }
+        if (whiteCanCastleLong){
+            s += " | white long";
+        }
+        if (blackCanCastleShort){
+            s += " | black short";
+        }
+        if (blackCanCastleLong){
+            s += " | black long";
+        }
+        std::cout << s << std::endl;
+        return true;
+    }
+
     if (move.length() == 2){
         int startCol = move[0] - 'a';
         int startRow = move[1] - '1';
@@ -454,10 +525,19 @@ bool Board::moveInput(const std::string move){
     Square end = Square(endRow, endCol);    
     Move myMove = Move(start, end, getPieceAt(start), getPieceAt(end));
 
+    bool whiteShort = whiteCanCastleShort;
+    bool whiteLong = whiteCanCastleLong;
+    bool blackShort = blackCanCastleShort;
+    bool blackLong = blackCanCastleLong;
+
     bool moveSuccess = makeMove(myMove);
 
     if (!moveSuccess){
         std::cout << "Move failed" << std::endl;
+        whiteCanCastleShort = whiteShort;
+        whiteCanCastleLong = whiteLong;
+        blackCanCastleShort = blackShort;
+        blackCanCastleLong = blackLong;
         return true;
     }
 
@@ -469,6 +549,11 @@ bool Board::moveInput(const std::string move){
 
     if (!hasLegalMoves(nextToMove) && isInCheck(nextToMove)){
         std::cout << "CHECKMATE" << std::endl;
+        return false;
+    }
+
+    if (!hasLegalMoves(nextToMove) && !isInCheck(nextToMove)){
+        std::cout << "STALEMATE" << std::endl;
         return false;
     }
 
@@ -486,10 +571,11 @@ bool Board::castle(const std::string move){
     std::vector<Square> squaresToCheck; 
     std::vector<Move> opposingPlayerMoves; 
     if (color == WHITE){
-        if (!whiteCanCastleShort || !whiteCanCastleLong){
-            return false;
-        }
+
         if (move == "short"){
+            if (!whiteCanCastleShort){
+                return false;
+            }
             Square sq1 = Square(0, 4);
             Square sq2 = Square(0, 5);
             Square sq3 = Square(0, 6);
@@ -499,6 +585,9 @@ bool Board::castle(const std::string move){
             squaresToCheck.push_back(sq3);
             squaresToCheck.push_back(sq4);
         } else if (move == "long"){
+            if (!whiteCanCastleLong){
+                return false;
+            }
             Square sq1 = Square(0, 4);
             Square sq2 = Square(0, 3);
             Square sq3 = Square(0, 2);
@@ -512,10 +601,11 @@ bool Board::castle(const std::string move){
         }
     }
     if (color == BLACK){
-        if (!blackCanCastleShort || !blackCanCastleLong){
-            return false;
-        }
+
         if (move == "short"){
+            if (!blackCanCastleShort){
+                return false;
+            }
             Square sq1 = Square(7, 4);
             Square sq2 = Square(7, 5);
             Square sq3 = Square(7, 6);
@@ -525,6 +615,9 @@ bool Board::castle(const std::string move){
             squaresToCheck.push_back(sq3);
             squaresToCheck.push_back(sq4);
         } else if (move == "long"){
+            if (!blackCanCastleLong){
+                return false;
+            }
             Square sq1 = Square(7, 4);
             Square sq2 = Square(7, 3);
             Square sq3 = Square(7, 2);
@@ -559,12 +652,16 @@ bool Board::castle(const std::string move){
 
     if (color == WHITE && move == "short"){
         moveList.push_back(WHITE_SHORT_CASTLE);
+        whiteCanCastleShort = false;
     } else if (color == WHITE && move == "long"){
         moveList.push_back(WHITE_LONG_CASTLE);
+        whiteCanCastleLong = false;
     } else if (color == BLACK && move == "short"){
         moveList.push_back(BLACK_SHORT_CASTLE);
+        blackCanCastleShort = false;
     } else if (color == BLACK && move == "long"){
         moveList.push_back(BLACK_LONG_CASTLE);
+        blackCanCastleLong = false;
     } else {
         std::cerr << "nah m8" << std::endl;
     }
@@ -597,6 +694,7 @@ bool Board::undoMove(){
         colors[0][7] = WHITE;
         flipPlayerTurn();
         moveList.erase(moveList.begin() + moveList.size() - 1);
+        whiteCanCastleShort = true;
         return true;
     }
 
@@ -611,6 +709,7 @@ bool Board::undoMove(){
         colors[0][0] = WHITE;
         flipPlayerTurn();
         moveList.erase(moveList.begin() + moveList.size() - 1);
+        whiteCanCastleLong = true;
         return true;
     }
 
@@ -625,6 +724,7 @@ bool Board::undoMove(){
         colors[7][7] = BLACK;
         flipPlayerTurn();
         moveList.erase(moveList.begin() + moveList.size() - 1);
+        blackCanCastleShort = true;
         return true;
     }
 
@@ -639,6 +739,7 @@ bool Board::undoMove(){
         colors[7][0] = BLACK;
         flipPlayerTurn();
         moveList.erase(moveList.begin() + moveList.size() - 1);
+        blackCanCastleLong = true;
         return true;
     }
 
@@ -1249,7 +1350,16 @@ bool Board::hasLegalMoves(const Color color){
     std::vector<Move> moves = getPlayerMoves(color);
     bool hasFoundLegalMove = false;
     for (size_t i = 0; i < moves.size(); i++){
+        // ignore this horrendous code, even by my standards
+        bool whiteShort = whiteCanCastleShort;
+        bool whiteLong = whiteCanCastleLong;
+        bool blackShort = blackCanCastleShort;
+        bool blackLong = blackCanCastleLong;
         makeMove(moves[i]);
+        whiteCanCastleShort = whiteShort;
+        whiteCanCastleLong = whiteLong;
+        blackCanCastleShort = blackShort;
+        blackCanCastleLong = blackLong;
         bool playerIsInCheck = isInCheck(color);
         if (!playerIsInCheck){
             undoMove();
@@ -1268,4 +1378,55 @@ void Board::flipPlayerTurn(){
     }
 
     return;
+}
+
+std::string Board::toString() const{
+    std::string str = "_X_";
+    for (size_t i = 0; i < 8; i++){
+        for (size_t j = 0; j < 8; j++){
+            Piece piece = getPieceAt(Square(i, j));
+            Color color = getColorAt(Square(i, j));
+            switch (piece){
+                case EMPTY:
+                    str += "□";
+                    break;
+                case PAWN:
+                    str += color == WHITE ? 'P' : 'p';
+                    break;
+                case KNIGHT:
+                    str += color == WHITE ? 'N' : 'n';
+                    break;
+                case BISHOP:
+                    str += color == WHITE ? 'B' : 'b';
+                    break;
+                case ROOK:
+                    str += color == WHITE ? 'R' : 'r';
+                    break;
+                case QUEEN:
+                    str += color == WHITE ? 'Q' : 'q';
+                    break;
+                case KING:
+                    str += color == WHITE ? 'K' : 'k';
+                    break;
+                default: 
+                    std::cerr << "Wuuuuut" << std::endl;
+                    break;
+            }
+        }
+    }
+    str += "_X_";
+    str += nextToMove == WHITE ? "W" : "B";
+    str += whiteCanCastleShort ? "1" : "0";
+    str += whiteCanCastleLong ? "1" : "0";
+    str += blackCanCastleShort ? "1" : "0";
+    str += blackCanCastleLong ? "1" : "0";
+    /* std::string halfMoveCounterString = std::to_string(halfMoveCounter);
+    if (halfMoveCounter <= 9){
+        str += "_";
+    }
+    if (halfMoveCounter <= 99){
+        str += "_";
+    }
+    str += halfMoveCounterString; */
+    return str;
 }

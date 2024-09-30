@@ -20,5 +20,8 @@ int main(){
         
     }
 
+    std::string test = board.toString();
+    std::cout << test << std::endl;
+
     return 0;
 }

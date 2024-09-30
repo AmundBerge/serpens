@@ -78,8 +78,8 @@ class Board {
         bool hasLegalMoves(const Color color);
 
         void flipPlayerTurn();
-
-
+        
+        std::string toString() const;
 
     private:
         Piece board[8][8];
@@ -95,6 +95,8 @@ class Board {
         Move WHITE_LONG_CASTLE;
         Move BLACK_SHORT_CASTLE;
         Move BLACK_LONG_CASTLE;
+        bool playingInTerminal;
+        int halfMoveCounter;
 };
 
 
