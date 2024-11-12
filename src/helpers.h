@@ -12,6 +12,8 @@ namespace Printers {
     std::string pieceToString(Piece piece);
     std::string squareToString(Square square);
     std::string moveToString(Move move);
+
+    std::string moveToString8(Move move);
 }
 
 #endif

@@ -1,5 +1,6 @@
 #include "board.h"
 #include "helpers.h"
+#include "evaluation.h"
 
 #include <iostream>
 #include <string>
@@ -371,6 +372,12 @@ bool Board::moveInput(const std::string move){
 
     if (move == "terminal"){
         playingInTerminal = true;
+        return true;
+    }
+    
+    if (move == "eval"){
+        std::cout << getEvaluation(*this) << std::endl;
+        return true;
     }
 
     if (move == "state"){
@@ -1319,6 +1326,9 @@ Move Board::getRandomMoveForPlayer(const Color color) const{
 }
 
 Move Board::getLastMove() const{
+    if (moveList.empty()){
+        throw std::out_of_range("nah m8");
+    }
     return moveList[moveList.size() - 1];
 }
 
@@ -1387,6 +1397,74 @@ std::string Board::toString() const{
             Piece piece = getPieceAt(Square(i, j));
             Color color = getColorAt(Square(i, j));
             switch (piece){
+                case EMPTY: 
+                    str += "□";
+                    break;
+                case PAWN:
+                    str += color == WHITE ? "P" : "p";
+                    break;
+                case KNIGHT:
+                    str += color == WHITE ? "N" : "n";
+                    break;
+                case BISHOP:
+                    str += color == WHITE ? "B" : "b";
+                    break;
+                case ROOK:
+                    str += color == WHITE ? "R" : "r";
+                    break;
+                case QUEEN:
+                    str += color == WHITE ? "Q" : "q";
+                    break;
+                case KING: 
+                    str += color == WHITE ? "K" : "k";
+                    break;
+                default: 
+                    std::cerr << "Something went wrong" << std::endl;
+                    break;
+            }
+        }
+    }
+    str += "-X-";
+    str += nextToMove == WHITE ? "W" : "B";
+    str += whiteCanCastleShort ? "1" : "0";
+    str += whiteCanCastleLong ? "1" : "0";
+    str += blackCanCastleShort ? "1" : "0";
+    str += blackCanCastleLong ? "1" : "0";
+    if (halfMoveCounter < 10){
+        str += "0";
+    } else if (halfMoveCounter >= 50){
+        str += "50";
+    } else {
+        str += std::to_string(halfMoveCounter);
+    }
+    // better to use moveToString9 directly, should be made to handle castling
+    // Move lastMove = getLastMove();
+    Move lastMove = Move(Square(0,0),Square(0,0),EMPTY,EMPTY);
+    std::string simpleLastMoveString = Printers::moveToString(lastMove);
+    if (simpleLastMoveString == "b1b1" || simpleLastMoveString == "c1c1" || simpleLastMoveString == "d1d1" || simpleLastMoveString == "e1e1"){
+        str += "9999";
+        str += simpleLastMoveString;
+    } else { 
+        str += "";
+    }
+
+
+
+
+
+    return str;
+
+    
+}
+
+/* 
+std::string Board::toString() const{
+    std::string str = "_X_";
+    for (size_t i = 0; i < 8; i++){
+        for (size_t j = 0; j < 8; j++){
+            Piece piece = getPieceAt(Square(i, j));
+            Color color = getColorAt(Square(i, j));
+            switch (piece){
                 case EMPTY:
                     str += "□";
                     break;
@@ -1420,13 +1498,15 @@ std::string Board::toString() const{
     str += whiteCanCastleLong ? "1" : "0";
     str += blackCanCastleShort ? "1" : "0";
     str += blackCanCastleLong ? "1" : "0";
-    /* std::string halfMoveCounterString = std::to_string(halfMoveCounter);
+     std::string halfMoveCounterString = std::to_string(halfMoveCounter);
     if (halfMoveCounter <= 9){
         str += "_";
     }
     if (halfMoveCounter <= 99){
         str += "_";
     }
-    str += halfMoveCounterString; */
+    str += halfMoveCounterString;
     return str;
-}
+} 
+*/
+

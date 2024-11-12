@@ -98,5 +98,9 @@ namespace Printers
         return str;
     }
 
+    std::string moveToString8(Move move){
+        std::string str = "";
+        return str;
+    }
 
 }

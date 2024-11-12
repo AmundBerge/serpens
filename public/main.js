@@ -3,11 +3,11 @@ let squaresList = [];
 let startSquare = '';
 let endSquare = '';
 
-let moveSuccess = false; 
+// let moveSuccess = false; 
 let playingAgainstEngine = false;
 let engineMove = '';
 
-const startingBoard = "_X_RNBQKBNRPPPPPPPP□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□pppppppprnbqkbnr_X_W1111";
+const startingBoard = "_X_RNBQKBNRPPPPPPPP□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□pppppppprnbqkbnr-X-W1111";
 
 function placePieces(str){
     if (str.length != 75){
@@ -105,13 +105,13 @@ async function updateBoard(){
     let start = document.querySelector(`#${startSquare}`);
     let end = document.querySelector(`#${endSquare}`);
     await sendMove(start.id + end.id);
-    if (moveSuccess){
+   /*  if (moveSuccess){
         updatePieces(start.id + end.id);
         if (playingAgainstEngine){
             updatePieces(engineMove);
         }
     } 
-    moveSuccess = false;
+    moveSuccess = false; */
 }
 
 function updatePieces(move){
@@ -149,7 +149,7 @@ async function sendMove(move){
             },
             body: move + '\n'
         })
-        if (response.ok){
+        /* if (response.ok){
             const result = await response.text();
             if (result == 'Game is finished'){
                 alert('we done');
@@ -158,7 +158,10 @@ async function sendMove(move){
                 engineMove = result.substring(result.length - 4, result.length);
             }
             moveSuccess = (result.includes('Move success'));
-        }
+        } */
+       if (response.ok){
+        
+       }
     } catch (error){
         console.log(error, 'errorrrrr');
     } 

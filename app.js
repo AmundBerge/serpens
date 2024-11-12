@@ -13,9 +13,15 @@ let playingAgainstEngine = false;
 let engineMove = '';
 let gameFinished = false;
 
+let gameState;
+
 engine.stdout.on('data', (data) => {
     let engineData = `${data}`;
     console.log(engineData);
+    let index = engineData.indexOf('_X_');
+    if (index != -1){
+        gameState = engineData.substring(index, index + 75);
+    }
     moveSuccess = !engineData.includes('failed');
     infoSuccess = engineData.includes('Playing against engine');
     if (infoSuccess){
