@@ -1,6 +1,7 @@
 #include "board.h"
 #include "helpers.h"
 #include "evaluation.h"
+#include "move_gen.h"
 
 #include <iostream>
 #include <string>
@@ -377,6 +378,11 @@ bool Board::moveInput(const std::string move){
     
     if (move == "eval"){
         std::cout << getEvaluation(*this) << std::endl;
+        return true;
+    }
+
+    if (move == "movegen"){
+        std::cout << Printers::moveToString(generateMove(*this));
         return true;
     }
 
@@ -1388,6 +1394,10 @@ void Board::flipPlayerTurn(){
     }
 
     return;
+}
+
+Color Board::getNextToMove() const{
+    return nextToMove;
 }
 
 std::string Board::toString() const{

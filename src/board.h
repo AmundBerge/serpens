@@ -81,6 +81,8 @@ class Board {
         
         std::string toString() const;
 
+        Color getNextToMove() const;
+
     private:
         Piece board[8][8];
         Color colors[8][8];
